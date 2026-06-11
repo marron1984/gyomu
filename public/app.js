@@ -18,6 +18,32 @@ const esc = (s) =>
     ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])
   );
 
+// 画像を縮小してアップロードサイズを抑える（最大辺1600px / JPEG）。失敗時は元ファイル。
+function downscaleImage(file, maxDim = 1600, quality = 0.85) {
+  return new Promise((resolve) => {
+    if (!file.type.startsWith('image/')) return resolve(file);
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      try {
+        let { width, height } = img;
+        const scale = Math.min(1, maxDim / Math.max(width, height));
+        width = Math.round(width * scale);
+        height = Math.round(height * scale);
+        const canvas = document.createElement('canvas');
+        canvas.width = width; canvas.height = height;
+        canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+        canvas.toBlob(
+          (blob) => { URL.revokeObjectURL(url); resolve(blob && blob.size < file.size ? blob : file); },
+          'image/jpeg', quality
+        );
+      } catch { URL.revokeObjectURL(url); resolve(file); }
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); resolve(file); };
+    img.src = url;
+  });
+}
+
 function toast(msg, isErr) {
   const t = $('#toast');
   t.textContent = msg;
@@ -291,12 +317,13 @@ function renderChecklistForm(container) {
       itemNotes: state.itemNotes,
       remarks: signCard.querySelector('#remarks').value,
     };
-    const fd = new FormData();
-    fd.append('payload', JSON.stringify(payload));
-    fd.append('signature', state.file);
     const btn = signCard.querySelector('#submitBtn');
     btn.disabled = true; btn.textContent = '送信中…';
     try {
+      const fd = new FormData();
+      fd.append('payload', JSON.stringify(payload));
+      const signBlob = await downscaleImage(state.file);
+      fd.append('signature', signBlob, 'signature.jpg');
       await api('/api/submissions', { method: 'POST', body: fd });
       toast('提出しました。上司の承認をお待ちください。');
       renderStaffHome();
@@ -426,7 +453,7 @@ async function openDetail(id, isAdmin) {
   // サイン写真
   const signCard = el('div', 'card');
   signCard.innerHTML = `<h2>完了サイン（アップロード写真）</h2>`;
-  if (r.signatureFile) {
+  if (r.hasSignature) {
     const img = el('img');
     img.src = '/api/submissions/' + id + '/signature';
     img.alt = 'サイン写真';
