@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#1f6feb" />
+  <title>A勤 業務チェックリスト</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="title-row">
+        <h1 id="appTitle">A勤 業務チェックリスト</h1>
+        <span class="date-badge" id="dateBadge"></span>
+      </div>
+      <p class="subtitle" id="appSubtitle"></p>
+
+      <div class="controls">
+        <label class="staff-field">
+          <span>担当者</span>
+          <input type="text" id="staffInput" placeholder="名前を入力" autocomplete="name" />
+        </label>
+        <label class="filter-field">
+          <input type="checkbox" id="hideDone" />
+          <span>未完了だけ表示</span>
+        </label>
+        <button type="button" id="resetBtn" class="reset-btn">リセット</button>
+      </div>
+
+      <div class="progress-wrap">
+        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+        <div class="progress-text" id="progressText">0 / 0（0%）</div>
+      </div>
+    </div>
+  </header>
+
+  <main id="checklist" class="checklist"></main>
+
+  <footer class="app-footer">
+    <p>チェック状態はこの端末のブラウザに保存され、日付が変わると自動でリセットされます。</p>
+  </footer>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
