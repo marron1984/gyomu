@@ -26,7 +26,6 @@ DHP 訪問介護サービスの「A勤 業務チェックリスト（行動ベ�
 | `styles.css` | スタイル |
 | `app.js` | 描画・チェック保存・進捗計算 |
 | `data.js` | チェックリストのデータ（全154項目） |
-| `vercel.json` | Vercel 用設定 |
 
 ## ローカルで確認する
 
@@ -43,9 +42,13 @@ python3 -m http.server 3000
 ## Vercel へのデプロイ
 
 1. このリポジトリを Vercel にインポート（Add New → Project）
-2. フレームワークは「Other（静的）」のまま **Deploy**
+2. **Framework Preset を「Other」** にし、**Build Command / Output Directory / Install Command は空（未設定）** のまま **Deploy**
 
-ビルド設定や環境変数は不要です。
+ビルド設定や環境変数は不要です（ビルド工程のない純粋な静的サイトのため、`vercel.json` も置いていません）。
+
+> すでに以前のプロジェクト設定が残っていてビルドが失敗する場合は、Vercel の
+> Project → Settings → Build & Development Settings で、Framework Preset を「Other」、
+> Build Command / Output Directory / Install Command を空に戻してから Redeploy してください。
 
 ## チェックリストの改訂
 
