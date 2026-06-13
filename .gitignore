@@ -1,12 +1,4 @@
 node_modules/
-uploads/*
-!uploads/.gitkeep
-.env
-.env*.local
+.DS_Store
 .vercel
 *.log
-
-# 旧SQLite成果物
-data/*.db
-data/*.db-shm
-data/*.db-wal
